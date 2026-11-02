@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<title>Autorización · OZL Shorts</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.codigo{background:var(--panel);border:1px solid var(--borde);border-left:4px solid var(--acento);border-radius:10px;padding:14px 16px;font:15px/1.5 ui-monospace,Menlo,Consolas,monospace;word-break:break-all;user-select:all}
+button{margin-top:12px;background:var(--acento);color:#fff;border:0;border-radius:8px;padding:10px 18px;font:600 16px system-ui,sans-serif;cursor:pointer}
+.oculto{display:none}
+</style>
+</head>
+<body>
+<header><div class="barra">
+<a class="marca" href="index.html">OZL <span>Shorts</span></a>
+<nav><a href="index.html">Inicio</a><a href="privacy.html">Privacidad</a><a href="terms.html">Condiciones</a></nav>
+</div></header>
+<main>
+<h1 id="titulo">Autorización de TikTok</h1>
+<p id="estado" class="sub">Procesando…</p>
+<div id="bloque" class="oculto">
+<p>Copia este código y pégalo en la terminal del Mac (<code>upload_tiktok.py --auth</code>):</p>
+<div id="codigo" class="codigo"></div>
+<button id="copiar" type="button">Copiar código</button>
+</div>
+<p class="sub" style="margin-top:28px">Esta página solo recibe el código de autorización de TikTok y lo pasa a la herramienta interna OZL Shorts en el equipo del propietario. No guarda ni envía datos a ningún servidor.</p>
+</main>
+<footer><div>© OZL Comunicación · <a href="mailto:info@ozlcomunicacion.com">info@ozlcomunicacion.com</a></div></footer>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var code = q.get("code"), state = q.get("state") || "", err = q.get("error");
+  var estado = document.getElementById("estado");
+  if (err) {
+    document.getElementById("titulo").textContent = "No se ha autorizado";
+    estado.textContent = "TikTok devolvió: " + err + (q.get("error_description") ? " — " + q.get("error_description") : "");
+    return;
+  }
+  if (!code) { estado.textContent = "No hay ningún código de autorización en esta dirección."; return; }
+  // state "<aleatorio>~l<puerto>": el script del Mac espera en http://127.0.0.1:<puerto>/callback
+  var m = state.match(/~l(\d{4,5})$/);
+  document.getElementById("codigo").textContent = code;
+  document.getElementById("bloque").className = "";
+  document.getElementById("copiar").onclick = function () {
+    navigator.clipboard.writeText(code).then(function () { document.getElementById("copiar").textContent = "Copiado ✓"; });
+  };
+  if (m) {
+    estado.textContent = "Enviando el código a OZL Shorts en tu Mac…";
+    setTimeout(function () {
+      location.replace("http://127.0.0.1:" + m[1] + "/callback" + location.search);
+    }, 600);
+  } else {
+    estado.textContent = "Autorización correcta.";
+  }
+})();
+</script>
+</body>
+</html>
